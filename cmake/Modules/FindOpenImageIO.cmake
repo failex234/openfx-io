@@ -59,6 +59,11 @@ find_library ( OPENIMAGEIO_LIBRARY
                NAMES OpenImageIO${OIIO_LIBNAME_SUFFIX}
                HINTS ${OPENIMAGEIO_ROOT_DIR}
                PATH_SUFFIXES lib64 lib )
+# OIIO >= 3 no longer re-exports its utility functions (Filesystem, ParamValue, ...) from libOpenImageIO.
+find_library ( OPENIMAGEIO_UTIL_LIBRARY
+               NAMES OpenImageIO_Util${OIIO_LIBNAME_SUFFIX}
+               HINTS ${OPENIMAGEIO_ROOT_DIR}
+               PATH_SUFFIXES lib64 lib )
 find_path ( OPENIMAGEIO_INCLUDE_DIR
             NAMES OpenImageIO/imageio.h
             HINTS ${OPENIMAGEIO_ROOT_DIR} )
@@ -97,6 +102,9 @@ set (OPENIMAGEIO_FOUND ${OpenImageIO_FOUND})  # Old name
 if (OpenImageIO_FOUND)
     set (OPENIMAGEIO_INCLUDES ${OPENIMAGEIO_INCLUDE_DIR})
     set (OPENIMAGEIO_LIBRARIES ${OPENIMAGEIO_LIBRARY})
+    if (OPENIMAGEIO_UTIL_LIBRARY)
+        list (APPEND OPENIMAGEIO_LIBRARIES ${OPENIMAGEIO_UTIL_LIBRARY})
+    endif ()
     get_filename_component (OPENIMAGEIO_LIBRARY_DIRS "${OPENIMAGEIO_LIBRARY}" DIRECTORY)
     if (NOT OpenImageIO_FIND_QUIETLY)
         message ( STATUS "OpenImageIO includes     = ${OPENIMAGEIO_INCLUDE_DIR}" )
@@ -111,7 +119,11 @@ if (OpenImageIO_FOUND)
             INTERFACE_INCLUDE_DIRECTORIES "${OPENIMAGEIO_INCLUDES}")
 
         set_property(TARGET OpenImageIO::OpenImageIO APPEND PROPERTY
-            IMPORTED_LOCATION "${OPENIMAGEIO_LIBRARIES}")
+            IMPORTED_LOCATION "${OPENIMAGEIO_LIBRARY}")
+        if (OPENIMAGEIO_UTIL_LIBRARY)
+            set_property(TARGET OpenImageIO::OpenImageIO APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES "${OPENIMAGEIO_UTIL_LIBRARY}")
+        endif ()
     endif ()
 
     if (NOT TARGET OpenImageIO::oiiotool AND EXISTS "${OIIOTOOL_BIN}")
@@ -124,4 +136,5 @@ endif ()
 mark_as_advanced (
     OPENIMAGEIO_INCLUDE_DIR
     OPENIMAGEIO_LIBRARY
+    OPENIMAGEIO_UTIL_LIBRARY
     )
