@@ -25,7 +25,7 @@ endif(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 ########################################################################
 # Project setup
 ########################################################################
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1...3.31)
 project(OpenFXIO CXX)
 enable_testing()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
